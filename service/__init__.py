@@ -1,15 +1,19 @@
 """
 Service Package
 """
+import logging
 from flask import Flask
 
 app = Flask(__name__)
 
-# This must be imported after the Flask app is created
-from service import routes               # pylint: disable=wrong-import-position,cyclic-import
-from service.common import log_handlers  # pylint: disable=wrong-import-position
+# Configure basic logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 
-log_handlers.init_logging(app, "gunicorn.error")
+# Import after Flask app creation to avoid circular imports
+from service import routes  # pylint: disable=wrong-import-position
 
 app.logger.info(70 * "*")
 app.logger.info("  S E R V I C E   R U N N I N G  ".center(70, "*"))
