@@ -28,7 +28,6 @@ from . import status
 ######################################################################
 def init_logging(app, logger_name="gunicorn.error"):
     """Initialize logging for the application
-    
     Args:
         app: Flask application instance
         logger_name: Name of the logger to use (default: gunicorn.error)
