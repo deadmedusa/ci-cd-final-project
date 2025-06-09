@@ -15,17 +15,48 @@
 ######################################################################
 
 """
-Module: error_handlers
+Logging and Error Handlers
 """
+import logging
 from flask import jsonify
 from service import app
 from . import status
 
 
 ######################################################################
+# Initialize Logging
+######################################################################
+def init_logging(app, logger_name="gunicorn.error"):
+    """Initialize logging for the application
+    
+    Args:
+        app: Flask application instance
+        logger_name: Name of the logger to use (default: gunicorn.error)
+    """
+    # Set the default log level
+    app.logger.setLevel(logging.INFO)
+
+    # Add a console handler
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.INFO)
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
+    console_handler.setFormatter(formatter)
+    app.logger.addHandler(console_handler)
+
+    # Initialize the gunicorn logger if available
+    gunicorn_logger = logging.getLogger(logger_name)
+    if gunicorn_logger.handlers:
+        app.logger.handlers = gunicorn_logger.handlers
+        app.logger.setLevel(gunicorn_logger.level)
+    else:
+        app.logger.info("Running without gunicorn logger")
+
+
+######################################################################
 # Error Handlers
 ######################################################################
-
 @app.errorhandler(status.HTTP_400_BAD_REQUEST)
 def bad_request(error):
     """Handles bad requests with 400_BAD_REQUEST"""
